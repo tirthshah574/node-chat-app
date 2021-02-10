@@ -50,9 +50,9 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', (message, callback) => {
     const { room, username } = getUser(socket.id) || {};
-    const filter = new Filter({ placeHolder: '🤬' });
+    const filter = new Filter({ placeHolder: '▪' });
 
-    // msg = filter.clean(msg);
+    message = filter.clean(message);
     if (filter.isProfane(message)) return callback('Profanity is not allowed!');
 
     io.to(room).emit('message', generateMessage(username, message));
