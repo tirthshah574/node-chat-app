@@ -12,6 +12,7 @@ const {
   removeUser,
   getUser,
   getUsersInRoom,
+  getCurrentRooms,
 } = require('./utils/users');
 
 const app = express();
@@ -25,6 +26,8 @@ app.use(express.static(publicDirectoryPath));
 
 io.on('connection', (socket) => {
   console.log('New WebSocket connection');
+
+  socket.emit('login', getCurrentRooms());
 
   socket.on('join', (options, callback) => {
     const { error, user } = addUser({ id: socket.id, ...options });
@@ -50,9 +53,9 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', (message, callback) => {
     const { room, username } = getUser(socket.id) || {};
-    const filter = new Filter({ placeHolder: '▪' });
+    const filter = new Filter({ placeHolder: '🤬' });
 
-    message = filter.clean(message);
+    // msg = filter.clean(msg);
     if (filter.isProfane(message)) return callback('Profanity is not allowed!');
 
     io.to(room).emit('message', generateMessage(username, message));
